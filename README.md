@@ -68,3 +68,20 @@ Now you can enable the service to start on startup and reboot
 sudo systemctl enable dropbox@<USERNAME>
 sudo reboot
 ```
+
+### Prevent automatic updates
+
+Since at least version 2.4.6 (see comments around 2013-11-06 on AUR), Dropbox has had an auto-update capability
+which downloads a new binary to the `~/.dropbox-dist/` folder. The service then attempts to hand over control to
+this binary and dies, causing systemd to re-start the service, generating a conflict and an endless loop of log-filling,
+CPU-eating misery.
+
+A workaround is to prevent Dropbox from downloading the automatic update by creating the
+`~/.dropbox-dist/` folder and making it read-only:
+
+```bash
+rm -rf ~/.dropbox-dist
+install -dm0 ~/.dropbox-dist
+```
+
+This appears to be necessary for modern Dropbox clients to operate successfully from systemd on arch. 
